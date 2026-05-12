@@ -1,0 +1,1 @@
+# gh-action-sigstore-python
