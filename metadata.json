@@ -1,7 +1,0 @@
-{
-  "owner": "sigstore",
-  "name": "gh-action-sigstore-python",
-  "visibility": "internal",
-  "description": "Use sigstore-python to sign Python packages",
-  "block_publish": false
-}
