@@ -13,6 +13,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | v3.1.0 | [`v3.1.0`](https://github.com/chainguard-actions/sigstore-gh-action-sigstore-python/tree/v3.1.0) | — |
 | v3.2.0 | [`v3.2.0`](https://github.com/chainguard-actions/sigstore-gh-action-sigstore-python/tree/v3.2.0) | — |
 | v3.3.0 | [`v3.3.0`](https://github.com/chainguard-actions/sigstore-gh-action-sigstore-python/tree/v3.3.0) | [`04cffa1`](https://github.com/sigstore/gh-action-sigstore-python/commit/04cffa1d795717b140764e8b640de88853c92acc) |
+| v3.4.0 | [`v3.4.0`](https://github.com/chainguard-actions/sigstore-gh-action-sigstore-python/tree/v3.4.0) | [`5b79a39`](https://github.com/sigstore/gh-action-sigstore-python/commit/5b79a39c381910c090341a2c9b0bf022c8b387e1) |
 
 ## Privacy
 
