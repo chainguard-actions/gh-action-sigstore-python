@@ -1,0 +1,38 @@
+name: Test verify missing cert-identity error
+# When verify is enabled but verify-cert-identity is not provided,
+# the action should exit with a non-zero code and print a helpful error message.
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: push
+      GITHUB_REF: refs/heads/main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create a dummy file to sign
+        run: echo "hello" > /tmp/dummy.txt
+
+      - name: Run action with verify but no cert-identity expecting failure
+        id: action
+        uses: .
+        with:
+          inputs: "/tmp/dummy.txt"
+          verify: "true"
+          verify-oidc-issuer: "https://token.actions.githubusercontent.com"
+          release-signing-artifacts: "false"
+        continue-on-error: true
+
+      - name: Assert action failed
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail when verify=true but verify-cert-identity is missing"
+            exit 1
+          fi
+          echo "PASS: action correctly failed when verify-cert-identity is missing"

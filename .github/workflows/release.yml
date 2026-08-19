@@ -1,0 +1,26 @@
+on:
+  release:
+    types:
+      - published
+
+name: release
+
+permissions: {}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Used to sign the artifacts.
+      contents: write # Used to attach signing artifacts to the release.
+
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: sign
+        uses: ./
+        id: sigstore-python
+        with:
+          inputs: action.yml action.py

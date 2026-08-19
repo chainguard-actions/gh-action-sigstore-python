@@ -1,0 +1,38 @@
+name: Test oidc-issuer without verify error
+# When verify-oidc-issuer is provided but verify is not enabled,
+# the action should exit with a non-zero code and print a helpful error message.
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: push
+      GITHUB_REF: refs/heads/main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create a dummy file to sign
+        run: echo "hello" > /tmp/dummy.txt
+
+      - name: Run action with oidc-issuer but verify disabled expecting failure
+        id: action
+        uses: .
+        with:
+          inputs: "/tmp/dummy.txt"
+          verify: "false"
+          verify-oidc-issuer: "https://token.actions.githubusercontent.com"
+          release-signing-artifacts: "false"
+        continue-on-error: true
+
+      - name: Assert action failed
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail when verify-oidc-issuer is set but verify is false"
+            exit 1
+          fi
+          echo "PASS: action correctly failed when verify-oidc-issuer set without verify"
