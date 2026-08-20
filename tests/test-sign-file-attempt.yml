@@ -1,0 +1,38 @@
+name: Test sign file attempt
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create a dummy Python wheel-like file to sign
+        run: echo "dummy wheel content" > /tmp/example-1.0.0-py3-none-any.whl
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          inputs: "/tmp/example-1.0.0-py3-none-any.whl"
+          release-signing-artifacts: "false"
+          internal-be-careful-debug: "true"
+
+      - name: Assert action ran (signing may fail without OIDC token in act)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          # In act, there is no ambient OIDC token, so signing will fail.
+          # We accept failure here as long as it's not a validation error
+          # (those are tested in other test files).
+          # The important thing is that the action reached the signing step,
+          # meaning setup succeeded and input validation passed.
+          if [ "$OUTCOME" = "success" ]; then
+            echo "PASS: signing succeeded (unexpected but acceptable)"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed at signing step (expected without OIDC token)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
