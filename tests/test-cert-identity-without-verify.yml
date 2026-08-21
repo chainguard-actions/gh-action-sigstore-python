@@ -1,0 +1,37 @@
+name: Test cert-identity without verify enabled fails
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create a dummy file to sign
+        run: echo "dummy content" > /tmp/dummy.txt
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          inputs: "/tmp/dummy.txt"
+          release-signing-artifacts: "false"
+          verify: "false"
+          verify-cert-identity: "test@example.com"
+          # verify is false but cert-identity is set — should fail
+
+      - name: Assert action failed due to cert-identity without verify
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action correctly failed when verify-cert-identity is set without verify: true"
+          elif [ "$OUTCOME" = "success" ]; then
+            echo "FAIL: action should have failed when verify-cert-identity is set without verify: true"
+            exit 1
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
